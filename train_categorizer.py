@@ -79,8 +79,3 @@ def categorize_complaint(text):
 
     return category, sub_category
 
-
-# Example usage
-text = "There is another passenger in my seat."
-category, sub_category = categorize_complaint(text)
-print(f"Category: {category}, Sub-Category: {sub_category}")
