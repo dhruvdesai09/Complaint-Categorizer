@@ -35,14 +35,18 @@ categories = {
 
 
 def categorize_complaint(text):
-    # Construct a prompt to guide the model
+    # Construct a detailed prompt to guide the model
     prompt = (
         "You are a helpful assistant that categorizes railway complaints into predefined categories and sub-categories. "
         "Here are the available categories and their sub-categories:\n\n"
     )
     for cat, subcategories in categories.items():
         prompt += f"{cat}: {', '.join(subcategories)}\n"
-    prompt += f"\nCategorize the following complaint: {text}"
+    prompt += (
+        "\nCategorize the following complaint based on these categories and sub-categories. "
+        "If the complaint doesn't fit into any category or sub-category, respond with 'Uncategorized'.\n\n"
+        f"Complaint: {text}"
+    )
 
     # Call OpenAI API
     response = openai.ChatCompletion.create(
@@ -62,13 +66,21 @@ def categorize_complaint(text):
     sub_category = "Miscellaneous"
 
     # Check against predefined categories and sub-categories
+    found = False
     for cat, subcategories in categories.items():
         for sub in subcategories:
             if sub.lower() in raw_response.lower():
                 category = cat
                 sub_category = sub
+                found = True
                 break
-        if category != "Miscellaneous":
+        if found:
             break
 
     return category, sub_category
+
+
+# Example usage
+text = "There is another passenger in my seat."
+category, sub_category = categorize_complaint(text)
+print(f"Category: {category}, Sub-Category: {sub_category}")
